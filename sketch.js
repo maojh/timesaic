@@ -9,6 +9,7 @@ var s,m,h;
 var timeInd;
 var light;
 var posx, posy;
+var ampm;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -42,21 +43,23 @@ function draw() {
   //exploration
   noCursor();
   myClock.hover();
-  infoHover(posx, posy);
+  ampm = h>12 && (h<23&&m<59)? "p.m." : "a.m.";
+  infoHover(ampm, posx, posy);
 
   //a.m./p.m. indication
-  var day = light? "a.m." : "p.m.";
   textSize(16);
   textStyle(BOLD);
-  text(day, width*0.90, height*0.05);
+  text(ampm, width*0.90, height*0.05);
   //noLoop();
-  console.log((int(map(mouseX, 0, width, 0, 60))));
+  console.log(h + " " + m);
 
 }
 
 
-function infoHover(px, py) {
+function infoHover(ampm, px, py) {
   fill(0);
+  py = ampm=="a.m."? "0" + py : py+12;
+  px = px<10? "0" + px : px;
   var explore = py + " : " + px;
   text(explore, mouseX-10, mouseY-5);
 }
@@ -120,15 +123,18 @@ function Unit(cmin, nline, hdx, hdy) {
   this.alpha = 150;
 
   this.show = function() {
-
-    timeInd = m + (h-12) * 60;
+    if(ampm == "p.m") {
+      timeInd = m + (h-12) * 60;
+    } else {
+      timeInd = m + (h) * 60;
+    }
     this.curInd = cmin + nline * 60;
 
     var lightfct = light? 255 : 0;
 
     if(this.curInd===timeInd) {
       // color for current time
-      fill(255*(cmin/60), abs(255-lightfct), 255*(nline/12));
+      fill(255*(cmin/60), abs(255-lightfct), 255*(nline/12), this.alpha-30);
       // ellipse(this.mdx*cmin+this.mdy/4, (this.mdy*nline)+this.mdy/2, this.mdy*1.2);
       rect(this.mdx*cmin, (this.mdy*nline), this.mdx, this.mdy, this.mdy/5);
 
@@ -143,7 +149,7 @@ function Unit(cmin, nline, hdx, hdy) {
     if (posx == int(this.ncol) && posy == int(this.nline)) {
       this.alpha = 245;
     } else {
-      this.alpha = 160;
+      this.alpha = 150;
     }
   }
 }
