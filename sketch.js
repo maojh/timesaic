@@ -42,7 +42,7 @@ function draw() {
   var day = light? "a.m." : "p.m.";
   textSize(16);
   textStyle(BOLD);
-  text(day, width*0.94, height*0.05);
+  text(day, width*0.93, height*0.05);
   //noLoop();
 }
 
