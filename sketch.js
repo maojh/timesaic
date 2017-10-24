@@ -8,6 +8,7 @@ var fast = 1;
 var s,m,h;
 var timeInd;
 var light;
+var posx, posy;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -23,6 +24,10 @@ function draw() {
   m = minute()*fast;
   h = hour()*fast;
 
+  // Get mouse discrete position
+  posx = (int(map(mouseX, 0, width, 0, 60)));
+  posy = (int(map(mouseY, 0, height, 0, 12)));
+
   //a.m or p.m.
   light = (h<20&&h>8? true : false);
 
@@ -36,26 +41,24 @@ function draw() {
 
   //exploration
   noCursor();
-  infoHover(mouseX, mouseY);
+  myClock.hover();
+  infoHover(posx, posy);
 
   //a.m./p.m. indication
   var day = light? "a.m." : "p.m.";
   textSize(16);
   textStyle(BOLD);
-  text(day, width*0.93, height*0.05);
+  text(day, width*0.90, height*0.05);
   //noLoop();
+  console.log((int(map(mouseX, 0, width, 0, 60))));
+
 }
 
 
-function infoHover(mx, my) {
-  var posx = (int(map(mx, 0, width, 0, 60)));
-  var posy = (int(map(my, 0, height, 0, 12)));
-
+function infoHover(px, py) {
   fill(0);
-  var explore = posy + " : " + posx;
-  text(explore, mx-10, my-5);
-
-  console.log();
+  var explore = py + " : " + px;
+  text(explore, mouseX-10, mouseY-5);
 }
 
 
@@ -78,6 +81,12 @@ function Clock() {
       this.lins[chour].show();
     }
   }
+
+  this.hover = function() {
+    for (var chour = 0; chour < 12; chour++) {
+      this.lins[chour].hover();
+    }
+  }
 }
 
 function Lin(chour, curSizew, curSizeh) {
@@ -93,6 +102,12 @@ function Lin(chour, curSizew, curSizeh) {
       this.units[cmin].show();
     }
   }
+
+  this.hover = function() {
+      for (var cmin = 0; cmin < 60; cmin++) {
+        this.units[cmin].hover();
+      }
+  }
 }
 
 
@@ -102,13 +117,13 @@ function Unit(cmin, nline, hdx, hdy) {
   this.mdy = hdy;
   this.nline = nline;
   this.curInd;
+  this.alpha = 150;
 
   this.show = function() {
 
     timeInd = m + (h-12) * 60;
     this.curInd = cmin + nline * 60;
 
-    var alpha = 150;
     var lightfct = light? 255 : 0;
 
     if(this.curInd===timeInd) {
@@ -118,10 +133,18 @@ function Unit(cmin, nline, hdx, hdy) {
       rect(this.mdx*cmin, (this.mdy*nline), this.mdx, this.mdy, this.mdy/5);
 
     } else {
-      fill(200*(cmin/60)+50, lightfct, 200*(nline/12)+50, alpha);
+      fill(200*(cmin/60)+50, lightfct, 200*(nline/12)+50, this.alpha);
       rect(this.mdx*cmin, (this.mdy*nline), this.mdx, this.mdy, this.mdy/5);
     }
     // rect(this.mdx*cmin + 3 + 6*cmin, (this.mdy*nline + 6*nline), this.mdx, this.mdy);
+  }
+
+  this.hover = function() {
+    if (posx == int(this.ncol) && posy == int(this.nline)) {
+      this.alpha = 245;
+    } else {
+      this.alpha = 160;
+    }
   }
 }
 
