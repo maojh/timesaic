@@ -58,7 +58,13 @@ function draw() {
 
 function infoHover(ampm, px, py) {
   fill(0);
-  py = ampm=="a.m."? "0" + py : py+12;
+  if(ampm=="a.m.") { 
+    if(py < 10) {
+        py = "0" + py;
+    }
+  } else {
+    py+12;
+  }
   px = px<10? "0" + px : px;
   var explore = py + " : " + px;
   text(explore, mouseX-10, mouseY-5);
